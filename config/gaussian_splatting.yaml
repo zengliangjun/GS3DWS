@@ -1,3 +1,8 @@
+hydra:
+  run:
+    dir: ${scene.out_path}
+
+projectname: Gaussian_Splatting
 
 scene:
   model_path: ""
@@ -13,7 +18,7 @@ scene:
     eval: false
     source_path: "data/nerf_synthetic/lego"
 
-  out_path: outputs/${scene.data.name}/${now:%Y%m%d_%H%M%S}
+  out_path: outputs/${projectname}/${scene.data.name}/${now:%Y%m%d_%H%M%S}
   log_path: ${scene.out_path}/log
 
 render:

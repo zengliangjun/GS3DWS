@@ -1,5 +1,8 @@
+
 defaults:
   - gaussian_splatting
+
+projectname: surf2d_gaussian
 
 optim:
   lambda_dist : 0.0

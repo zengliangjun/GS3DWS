@@ -31,9 +31,6 @@ def main(_cfg: DictConfig):
     #print(OmegaConf.to_yaml(_cfg))
     _config = config.load_surf2dgaussian_config(_cfg)
 
-    _config.scene.out_path = HydraConfig.get().runtime.output_dir
-    _config.scene.log_path = HydraConfig.get().runtime.output_dir
-
     _config.sys.dataCls = "gausiansplatting.data.nerf.NerfSource"
     _config.sys.sceneCls = "surf2dgaussian.scene.surf_scene.Scene"
     _config.sys.modelCls = "surf2dgaussian.scene.surf_model.Module"

@@ -135,3 +135,14 @@ class GSFrame():
     @property
     def pixel_num(self):
         return self.width * self.height
+
+
+class ViewFrame():
+    fovY: float
+    fovX: float
+    width: int
+    height: int
+
+    w2cTensor: torch.tensor
+    w2cViewTensor: torch.tensor
+    c2wCenterTensor: torch.tensor

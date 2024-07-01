@@ -82,8 +82,11 @@ class NerfSource:
 
         self._loadframes(_path)
         self.idxes = [_i for _i in range(len(self.frames))]
-        random.shuffle(self.idxes)
-        random.shuffle(self.idxes)
+
+        if not self.dataConf.eval:
+            random.shuffle(self.idxes)
+            random.shuffle(self.idxes)
+
         self.currentids = 0
         self.nerf_normalization = self._nerfppNorm()
 
@@ -96,6 +99,9 @@ class NerfSource:
 
     def __next__(self):
         if self.currentids >= len(self):
+            if self.dataConf.eval:
+                return None
+
             random.shuffle(self.idxes)
             random.shuffle(self.idxes)
             self.currentids = 0

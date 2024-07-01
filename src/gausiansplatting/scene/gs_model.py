@@ -221,7 +221,7 @@ class Module(gsmodel.IModule):
     def features(self):
         _dc = self.points.features_dc
         _rest = self.points.features_rest
-        return torch.cat((_dc, _rest), dim=1)
+        return torch.cat((_dc, _rest), dim = 1)
 
     @property
     def num(self):

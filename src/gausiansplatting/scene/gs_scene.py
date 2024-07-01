@@ -20,19 +20,7 @@ class Scene(gsscene.IScene):
         return self.data.loadRawPoints().tensor().to(self.device())
 
     def load(self) -> dict:
-        _path = osp.join(self.sceneConfig.out_path, "point_cloud")
-        if not osp.exists(_path):
-            return None
-        _iters = [int(_fname.split("_")[-1]) for _fname in os.listdir(_path)]
-        if 0 == len(_iters):
-            return None
-        _iter = max(_iters)  ## TODO
-        _path = osp.join(_path, f"iteration_{_iter}")
-        _items = points.GSPoints.load(_path, self.sceneConfig.sh_degree)
-        for _key in _items:
-            _items[_key] = _items[_key].to(self.device)
-
-        return _items
+        return load_toolkit(self.sceneConfig, self.device())
 
     def save(self, _iter, _gsmodel: gsmodel.IModule):
         if _iter not in self.sceneConfig.saving_iterations:
@@ -47,9 +35,29 @@ class Scene(gsscene.IScene):
     def device(self) -> str:
         return torch.device(self.sceneConfig.device)
 
+    def __len__(self):
+        return len(self.data)
+
     def __iter__(self):
         return self
 
     def __next__(self):
         _frame = next(self.data)
         return frame.GSFrame(_frame).to(self.device())
+
+
+def load_toolkit(_sceneConfig, _device):
+    _path = osp.join(_sceneConfig.model_path, "point_cloud")
+    if not osp.exists(_path):
+        return None
+    _iters = [int(_fname.split("_")[-1]) for _fname in os.listdir(_path)]
+    if 0 == len(_iters):
+        return None
+    _iter = max(_iters)  ## TODO
+    _path = osp.join(_path, f"iteration_{_iter}/point_cloud.ply")
+    _items = points.GSPoints.load(_path, _sceneConfig.sh_degree)
+    for _key in _items:
+        _items[_key] = _items[_key].to(_device)
+
+    _items['iter'] = _iter
+    return _items

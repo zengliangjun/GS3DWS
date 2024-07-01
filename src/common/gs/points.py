@@ -181,15 +181,17 @@ class GSPoints(points_utils.ModuleBase):
         _f_dc[:, 0, 0] = np.asarray(_plydata.elements[0]["f_dc_0"])
         _f_dc[:, 1, 0] = np.asarray(_plydata.elements[0]["f_dc_1"])
         _f_dc[:, 2, 0] = np.asarray(_plydata.elements[0]["f_dc_2"])
+        _f_dc = _f_dc.transpose(0, 2, 1)
 
         _restnames = [p.name for p in _plydata.elements[0].properties if p.name.startswith("f_rest_")]
         _restnames = sorted(_restnames, key = lambda x: int(x.split('_')[-1]))
         assert len(_restnames) == 3 * (_sh_degree + 1) ** 2 - 3
         _f_rest = np.zeros((_xyz.shape[0], len(_restnames)))
         for _idx, _attr_name in enumerate(_restnames):
-            _f_rest[:, idx] = np.asarray(_plydata.elements[0][attr_name])
+            _f_rest[:, _idx] = np.asarray(_plydata.elements[0][_attr_name])
         # Reshape (P,F*SH_coeffs) to (P, F, SH_coeffs except DC)
         _f_rest = _f_rest.reshape((_f_rest.shape[0], 3, (_sh_degree + 1) ** 2 - 1))
+        _f_rest = _f_rest.transpose(0, 2, 1)
 
         _scale_names = [p.name for p in _plydata.elements[0].properties if p.name.startswith("scale_")]
         _scale_names = sorted(_scale_names, key = lambda x: int(x.split('_')[-1]))

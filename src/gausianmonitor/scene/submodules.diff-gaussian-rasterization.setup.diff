@@ -1,0 +1,19 @@
+diff --git a/submodules/diff-gaussian-rasterization/setup.py b/submodules/diff-gaussian-rasterization/setup.py
+index 8211b22..3e66e0e 100644
+--- a/submodules/diff-gaussian-rasterization/setup.py
++++ b/submodules/diff-gaussian-rasterization/setup.py
+@@ -15,11 +15,11 @@ import os
+ os.path.dirname(os.path.abspath(__file__))
+ 
+ setup(
+-    name="diff_gaussian_rasterization",
+-    packages=['diff_gaussian_rasterization'],
++    name="diff_gaussian_rasterization_monitor",
++    packages=['diff_gaussian_rasterization_monitor'],
+     ext_modules=[
+         CUDAExtension(
+-            name="diff_gaussian_rasterization._C",
++            name="diff_gaussian_rasterization_monitor._C",
+             sources=[
+             "cuda_rasterizer/rasterizer_impl.cu",
+             "cuda_rasterizer/forward.cu",

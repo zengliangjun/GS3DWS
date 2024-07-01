@@ -1,9 +1,9 @@
 import os
-import os.path as osp
 import torch
 import hydra
 from simple import logger
 from tqdm import tqdm
+from simple import gsviewer
 
 def _preset_torch():
     torch.autograd.set_detect_anomaly(False)
@@ -24,9 +24,9 @@ def _prepare_output(args):
     #with open(os.path.join(args.scene.out_path, "cfg_args"), 'w') as cfg_log_f:
     #    cfg_log_f.write(str(Namespace(**vars(args))))
 
-
-
 def main(_config):  ##  GSTrainConfig
+    gsviewer._initviewgui(_config)
+
     _preset_torch()
     _prepare_output(_config.scene)
 
@@ -53,7 +53,9 @@ def main(_config):  ##  GSTrainConfig
     _paramters = _gsscene.load()
     if _paramters is not None:
         _gsmodel.merger(_paramters)
-        _startiter = _paramters['iter']
+        if hasattr(_paramters, 'iter'):
+            _startiter = _paramters['iter']
+
     else:
         _rawPoints = _gsscene.loadRawPoints()
         _rawPoints = _rawPoints.to(_device)
@@ -90,14 +92,14 @@ def main(_config):  ##  GSTrainConfig
 
             _gsscene.save(_iter, _gsmodel)
 
-            _log = 0.4 * _loss.item() + 0.6 * _emaloss4log
-            _emaloss4log = _loss.item()
+            _emaloss4log = 0.4 * _loss.item() + 0.6 * _emaloss4log
 
             if _iter % 10 == 0:
-                _bar.set_postfix({"Loss": f"{_loss.item():.{7}f} / {_log:.{7}f}"})
+                _bar.set_postfix({"Loss": f"{_loss.item():.{7}f} / {_emaloss4log:.{7}f}"})
                 _bar.update(10)
             if _iter == _optimConfig.iterations:
                 _bar.close()
 
-    _gsscene.save(_iter, _gsmodel)
+            gsviewer._stepviewgui(_config, _gsrender, _gsmodel)
 
+    _gsscene.save(_iter, _gsmodel)

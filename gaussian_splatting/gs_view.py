@@ -1,7 +1,6 @@
 import os.path as osp
 import sys
 import hydra
-from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig, OmegaConf
 
 _project_dir = osp.join(osp.dirname(__file__), "../")
@@ -19,7 +18,7 @@ from gausiansplatting import config
 # allows arbitrary python code execution in configs using the ${eval:''} resolver
 OmegaConf.register_new_resolver("eval", eval, replace=True)
 
-from simple import gstrainer
+from simple import gsviewer
 
 @hydra.main(
     version_base=None,
@@ -31,17 +30,16 @@ def main(_cfg: DictConfig):
     #print(OmegaConf.to_yaml(_cfg))
     _config = config.load_gausiansplatting_config(_cfg)
 
-    _config.sys.dataCls = "gausiansplatting.data.nerf.NerfSource"
-    _config.sys.sceneCls = "gausiansplatting.scene.gs_scene.Scene"
+    _config.scene.out_path = "/tmp"
+    _config.scene.log_path = "/tmp/log"
+    _config.scene.model_path = "outputs/Gaussian_Splatting/lego/20240701_175938"
+
     _config.sys.modelCls = "gausiansplatting.scene.gs_model.Module"
-    _config.sys.policyCls = "gausiansplatting.scene.gs_policy.Policy"
-    _config.sys.optimerCls = "gausiansplatting.scene.gs_optimer.Optimer"
-    _config.sys.lossCls = "gausiansplatting.scene.gs_loss.Loss"
-    #_config.sys.renderCls = "gausiansplatting.scene.gs_render.Render"
     _config.sys.renderCls = "gausianmonitor.scene.monitor_render.Render"
 
-
-    gstrainer.main(_config)
+    setattr(_config, "bindip", "127.0.0.1")
+    setattr(_config, "port", 6009)
+    gsviewer.main(_config)
 
 
 if __name__ == "__main__":

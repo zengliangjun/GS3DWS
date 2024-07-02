@@ -73,7 +73,9 @@ def main(_config):  ##  GSTrainConfig
     for _iter in range(_startiter, _optimConfig.iterations + 1):
 
         _frame = next(_gsscene)
-        _rout = _gsrender(_frame, _gsmodel.renderparams())
+        _paramters = _gsmodel.renderparams()
+        setattr(_frame, "paramters", _paramters)
+        _rout = _gsrender(_frame, _paramters)
 
         _loss, _losses = _gsloss(_frame, _rout)
         _loss.backward()
@@ -81,7 +83,7 @@ def main(_config):  ##  GSTrainConfig
         for _key in _losses:
             _losses[_key] = _losses[_key].item()
 
-        _losses['num'] = _gsmodel.num
+        _losses['num'] = _gsmodel.points_num
 
         _writer.write_dict(_losses, _iter)
 

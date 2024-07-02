@@ -43,9 +43,8 @@ class Optimer(gsoptimer.IOptimer):
         self.config = _config
         self.optimConfg = _config.optim
 
-    def setup(self, _params):
+    def _setuplrparams(self, _params):
         _config = self.optimConfg
-
 
         if hasattr(self.config, "nerf_normalization"):
             _spatial_lr_scale = self.config.nerf_normalization["radius"]
@@ -66,6 +65,17 @@ class Optimer(gsoptimer.IOptimer):
             {'params': [_params['rotation']],
              'lr': _config.rotation_lr, "name": "rotation"}
         ]
+        return _lparams
+
+
+    def setup(self, _params):
+        _lparams = self._setuplrparams(_params)
+        _config = self.optimConfg
+
+        if hasattr(self.config, "nerf_normalization"):
+            _spatial_lr_scale = self.config.nerf_normalization["radius"]
+        else:
+            _spatial_lr_scale = 3.9 ## spatial ## TODO
 
         self.optimizer = torch.optim.Adam(_lparams, lr=0.0, eps=1e-15)
         self.xyz_scheduler_args = get_expon_lr_func(lr_init= _config.position_lr_init * _spatial_lr_scale,

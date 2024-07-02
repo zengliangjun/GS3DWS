@@ -1,0 +1,15 @@
+
+defaults:
+  - gaussian_splatting
+
+projectname: prune_compact3dgs
+
+policy:
+  mask_prune_iter : 1_000
+
+optim:
+  mask_lr : 0.01
+  lambda_normal : 0.0005
+
+render:
+  depth_ratio: 0

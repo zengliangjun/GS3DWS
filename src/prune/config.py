@@ -23,6 +23,23 @@ class Compact3dgsConfig:
 def load_compact3dgs_config(cfg: DictConfig) -> Compact3dgsConfig:
     return gsconfig.load_typed_config(cfg, Compact3dgsConfig, {})
 
+### rad_splat
+@dataclass
+class PolicyRadsplat(gsconfig.PolicyCfg):
+    mask_prune_iter : int  = 1_000
+
+
+@dataclass
+class RadsplatConfig:
+    scene: gsconfig.SceneCfg
+    render: gsconfig.RenderCfg
+    optim: gsconfig.OptimCfg
+    policy: PolicyRadsplat
+    sys: gsconfig.SysConfig
+
+def load_radsplat_config(cfg: DictConfig) -> RadsplatConfig:
+    return gsconfig.load_typed_config(cfg, RadsplatConfig, {})
+
 
 ### mini splatting ms
 @dataclass

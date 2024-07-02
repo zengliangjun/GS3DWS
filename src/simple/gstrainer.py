@@ -47,6 +47,13 @@ def main(_config):  ##  GSTrainConfig
     _gsloss = _lossCls(_config)
     _gsrender = _renderCls(_config)
 
+    setattr(_config, "gsscene", _gsscene)
+    setattr(_config, "gsmodel", _gsmodel)
+    setattr(_config, "gspolicy", _gspolicy)
+    setattr(_config, "gsoptimer", _gsoptimer)
+    setattr(_config, "gsloss", _gsloss)
+    setattr(_config, "gsrender", _gsrender)
+
     _device = _gsscene.device()
 
     _startiter = 0
@@ -66,11 +73,15 @@ def main(_config):  ##  GSTrainConfig
 
     _gsoptimer.setup(_gsmodel.params())
 
+    _gspolicy.setup(_config)
+
     _emaloss4log = 0
     _optimConfig = _config.optim
     _bar = tqdm(range(_startiter, _optimConfig.iterations), desc="Training progress")
     _startiter += 1
     for _iter in range(_startiter, _optimConfig.iterations + 1):
+
+        _gspolicy.preUpdate(_config)
 
         _frame = next(_gsscene)
         _paramters = _gsmodel.renderparams()

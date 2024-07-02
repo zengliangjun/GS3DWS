@@ -5,7 +5,7 @@ import hydra
 from simple import logger
 from common.view import network_gui
 from gausiansplatting.scene import gs_scene
-from surf2dgaussian.scene import surf_render
+from extends.surf2dgaussian.scene import surf_render
 import matplotlib.pyplot as plt
 import traceback
 

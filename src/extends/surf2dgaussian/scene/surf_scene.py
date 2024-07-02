@@ -1,5 +1,5 @@
 from gausiansplatting.scene import gs_scene
-from surf2dgaussian.common import frame
+from extends.surf2dgaussian.common import frame
 
 class Scene(gs_scene.Scene):
 

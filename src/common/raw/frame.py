@@ -20,7 +20,7 @@ class Frame():
     @property
     def intrinsic(self):
         w, h = self.width, self.height
-        fx, fy = camera_utils.fov2focal(self.foVx, w), camera_utils.fov2focal(self.foVy, h)
+        fx, fy = camera_utils.fov2focal(self.fovX, w), camera_utils.fov2focal(self.fovY, h)
         cx = self.cx if self.cx > 0 else w / 2
         cy = self.cy if self.cy > 0 else h / 2
         _intrinstic = np.array([[fx, 0, cx], [0, fy, cy], [0, 0, 1]], dtype= np.float32)
@@ -37,4 +37,10 @@ class Frame():
     @property
     def c2w(self):
         return np.linalg.inv(self.w2c)
+
+
+class FrameRGBD(Frame):
+    depth_name: str
+    depth: np.array  # h*w*c
+    depth_scale: float
 

@@ -58,6 +58,11 @@ class CountState():
         self.xyz_gradient_accum[_mask, :] += torch.norm(_rout['uv'].grad[_mask, :2], dim=-1, keepdim=True)
         self.confidence[_mask, :] += 1
 
+    def clear(self):
+        setattr(self, "confidence", None)
+        setattr(self, "max_2dradii", None)
+        setattr(self, "xyz_gradient_accum", None)
+
 class Module(gsmodel.IModule):
 
     def __init__(self, _config):
@@ -77,6 +82,9 @@ class Module(gsmodel.IModule):
 
 
     def renderparams(self):
+        if self.xyz is None:
+            return None
+
         return {
             'xyz': self.xyz,
             'opacities': self.opacities,
@@ -182,10 +190,7 @@ class Module(gsmodel.IModule):
         for _key in _paramters:
             delattr(self.points, _key)
             setattr(self.points, _key, _paramters[_key])
-
-        setattr(self.state, "confidence", None)
-        setattr(self.state, "max_2dradii", None)
-        setattr(self.state, "xyz_gradient_accum", None)
+        self.state.clear()
         self.state.merger(_paramters)
 
     def save(self, _path: str, _params: dict = None):

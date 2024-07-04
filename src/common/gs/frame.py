@@ -66,16 +66,19 @@ class GSFrame():
         else:
             return torch.tensor(self.w2cGT)
 
+    '''
+    C2W
+    '''
+    @property
+    def c2wGT(self):
+        return np.linalg.inv(self.w2cGT).astype(np.float32)
+
     @property
     def c2w(self):
         if hasattr(self, "w2c") and self.w2c is not None:
             return np.linalg.inv(self.w2c).astype(np.float32)
         else:
             return None
-
-    @property
-    def c2wGT(self):
-        return np.linalg.inv(self.w2cGT).astype(np.float32)
 
     @property
     def c2wTensor(self):
@@ -125,6 +128,14 @@ class GSFrame():
         return _result
 
     @property
+    def intrinsic(self):
+        return self.data.intrinsic
+
+    @property
+    def intrinsicTensor(self):
+        return torch.tensor(self.intrinsic, dtype= torch.float32)
+
+    @property
     def color(self):
         return self.data.color
 
@@ -143,6 +154,6 @@ class ViewFrame():
     width: int
     height: int
 
-    w2cTensor: torch.tensor
-    w2cViewTensor: torch.tensor
-    c2wCenterTensor: torch.tensor
+    #w2cTensor: torch.tensor
+    #w2cViewTensor: torch.tensor
+    #c2wCenterTensor: torch.tensor

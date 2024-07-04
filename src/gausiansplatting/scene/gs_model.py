@@ -144,6 +144,9 @@ class Module(gsmodel.IModule):
         return _params
 
     def merger(self, _paramters):
+        if _paramters is None:
+            return
+
         self.points.merger(_paramters)
         self.state.merger(_paramters)
 

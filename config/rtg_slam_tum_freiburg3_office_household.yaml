@@ -1,0 +1,101 @@
+hydra:
+  run:
+    dir: ${scene.out_path}
+
+projectname: rtg_slam
+
+scene:
+  model_path: ""
+  scene_color: [0, 0, 0]
+
+  sh_degree: 3
+  device: "cuda:0"
+
+  saving_iterations: []
+  out_path: outputs/${projectname}/${scene.data.name}/${now:%Y%m%d_%H%M%S}
+  log_path: ${scene.out_path}/log
+
+  data: 
+    name: "tum_freiburg3_office_household"
+    eval: false
+    source_path: "data/SLAM/TUM/rgbd_dataset_freiburg3_long_office_household/"
+
+
+render:
+  bg_color: ${scene.scene_color}
+  active_sh_degree: ${scene.sh_degree}
+  # render params
+  renderer_opaque_threshold: 0.6
+  renderer_normal_threshold: 60
+  renderer_depth_threshold: 1.0
+  color_sigma: 3.0
+
+mapper:
+  preprocess:
+    # map preprocess
+    min_depth: 0.3
+    max_depth: 5.0
+    depth_filter: False
+    invalid_confidence_thresh: 0.2
+
+  gaussian:
+    # gaussian params
+    xyz_factor: [1, 1, 0.1] # z should be smallest
+    init_opacity: 0.99
+    scale_factor: 1.0
+    max_radius: 0.05
+    min_radius: 0.001
+
+  state:
+    # state manage
+    memory_length: 5
+    keyframe_trans_thes: 0.3
+    keyframe_theta_thes: 30
+
+  # map params
+  uniform_sample_num: 50000
+  transmission_sample_ratio: 1.0
+  error_sample_ratio: 0.05
+
+  add_transmission_thres: 0.5
+  add_depth_thres: 0.1
+  add_color_thres: 0.1
+  add_normal_thres: 1000
+  history_merge_max_weight: 0.5
+
+  stable_confidence_thres: 200
+  unstable_time_window: 150
+  KNN_num: 15
+  KNN_threshold: -1
+
+optim:
+
+  # optimize params:
+  gaussian_update_iter: 50
+  final_global_iter: 10
+  gaussian_update_frame: 4
+  global_keyframe_num: 3
+
+  color_weight: 0.8
+  depth_weight: 1.0
+  ssim_weight: 0.2
+  normal_weight: 0.0
+
+  position_lr : 0.001
+  feature_lr : 0.001
+  opacity_lr : 0.000
+  scaling_lr : 0.02
+  rotation_lr : 0.001
+  feature_lr_coef: 1.0
+  scaling_lr_coef: 1.0
+  rotation_lr_coef: 1.0
+
+sys:
+  dataCls: ""
+  frameCls: ""
+  trackCls: ""
+  mapCls: ""
+  modelCls: ""
+  optimizerCls: ""
+  renderCls: ""
+  stateCls: ""

@@ -154,6 +154,14 @@ class ViewFrame():
     width: int
     height: int
 
-    #w2cTensor: torch.tensor
-    #w2cViewTensor: torch.tensor
-    #c2wCenterTensor: torch.tensor
+    w2cTensor: torch.tensor
+    w2cViewTensor: torch.tensor
+    c2wCenterTensor: torch.tensor
+
+    @property
+    def cx(self):
+        return self.width / 2
+
+    @property
+    def cy(self):
+        return self.height / 2

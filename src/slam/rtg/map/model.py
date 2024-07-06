@@ -1,4 +1,4 @@
-from slam.common.map import imodel
+from slam.rtg.common.map import imodel
 from slam.rtg.map import model_new, model_point, utils
 import cuda_utils._C as cuda_utils
 

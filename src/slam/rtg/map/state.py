@@ -1,7 +1,7 @@
 from collections import deque
 from utils import geometry_utils
-from slam.common.map import istate
-from slam.common import iframe
+from slam.rtg.common.map import istate
+from slam.rtg.common import iframe
 
 class Manager(istate.StateManager):
 

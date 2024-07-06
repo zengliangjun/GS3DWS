@@ -1,4 +1,4 @@
-from slam.common import itracker
+from slam.rtg.common import itracker
 
 class Tracker(itracker.Tracker):
 

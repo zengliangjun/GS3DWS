@@ -3,7 +3,7 @@ from tqdm import tqdm
 import random
 import numpy as np
 
-from slam.common.map import ioptimizer, imodel
+from slam.rtg.common.map import ioptimizer, imodel
 from slam.rtg.map import optim_utils, loss
 
 

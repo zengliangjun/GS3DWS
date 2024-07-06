@@ -5,7 +5,7 @@ from pytorch3d import ops as p3dops
 import RTG_simple_knn._C as sknn
 
 from slam.rtg.map import model_point
-from slam.common.map import imodel
+from slam.rtg.common.map import imodel
 from common.raw import points
 
 class NewWarp:

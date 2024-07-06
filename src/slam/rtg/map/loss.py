@@ -1,4 +1,4 @@
-from slam.common.map import imodel
+from slam.rtg.common.map import imodel
 from common.gs import points_utils
 from utils import loss_utils
 import torch

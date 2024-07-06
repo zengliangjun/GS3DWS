@@ -1,5 +1,5 @@
 import abc
-from slam.common import iframe
+from slam.rtg.common import iframe
 
 class StateManager():
 

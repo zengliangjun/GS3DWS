@@ -1,5 +1,5 @@
-from slam.common import imapper
-from slam.common.map import imodel
+from slam.rtg.common import imapper
+from slam.rtg.common.map import imodel
 import torch
 
 class Mapper(imapper.Mapper):

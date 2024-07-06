@@ -1,4 +1,4 @@
-from slam.common import iframe
+from slam.rtg.common import iframe
 from common.gs import points_utils
 
 from diff_gaussian_rasterization_depth import  GaussianRasterizationSettings, GaussianRasterizer

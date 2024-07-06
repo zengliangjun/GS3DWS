@@ -9,59 +9,57 @@ class CountState():
 
     def __init__(self, args) -> None:
         super(CountState, self).__init__()
-        self.confidence = None
+        self.confidences = None
         self.max_2dradii = None
         self.xyz_gradient_accum = None
 
+        self.field_keys = ["confidences", "max_2dradii", "xyz_gradient_accum"]
+
     def update(self, _mask, _params = None):
-        if self.confidence is None:
+        if self.confidences is None:
             return
 
         if _params is not None:
-            _params["max_2dradii"] = self.max_2dradii[_mask]
-            _params["confidence"] = self.confidence[_mask]
-            _params["xyz_gradient_accum"] = self.xyz_gradient_accum[_mask]
+            for _key in self.field_keys:
+                _params[_key] = getattr(self, _key)[_mask]
 
         _mask = torch.logical_not(_mask)
-        self.max_2dradii = self.max_2dradii[_mask]
-        self.confidence = self.confidence[_mask]
-        self.xyz_gradient_accum = self.xyz_gradient_accum[_mask]
+        for _key in self.field_keys:
+            _values = getattr(self, _key)[_mask]
+            setattr(self, _key, _values)
 
     def merger(self, _paramters):
-        if "confidence" in _paramters:
-            _confidence = _paramters['confidence']
-            _2dradii = _paramters['max_2dradii']
-            _xyz_gradient_accum = _paramters['xyz_gradient_accum']
-        else:
+        if "confidences" not in _paramters:
             _xyz = _paramters['xyz']
-            _2dradii = torch.zeros(_xyz.shape[0], dtype = _xyz.dtype, device = _xyz.device)
-            _confidence = torch.zeros((_xyz.shape[0], 1), dtype = _xyz.dtype, device = _xyz.device)
-            _xyz_gradient_accum = torch.zeros((_xyz.shape[0], 1), dtype = _xyz.dtype, device = _xyz.device)
 
+            _paramters["confidences"] = torch.zeros((_xyz.shape[0], 1), dtype = _xyz.dtype, device = _xyz.device)
+            _paramters["max_2dradii"] = torch.zeros(_xyz.shape[0], dtype = _xyz.dtype, device = _xyz.device)
+            _paramters["xyz_gradient_accum"] = torch.zeros((_xyz.shape[0], 1), dtype = _xyz.dtype, device = _xyz.device)
 
-        if self.confidence is None:
-            self.confidence = _confidence
-            self.max_2dradii = _2dradii
-            self.xyz_gradient_accum = _xyz_gradient_accum
+        if self.confidences is None:
+            for _key in self.field_keys:
+                _values = _paramters[_key]
+                setattr(self, _key, _values)
+
         else:
-            self.confidence = torch.cat((self.confidence, _confidence), dim = 0)
-            self.max_2dradii = torch.cat((self.max_2dradii, _2dradii), dim = 0)
-            self.xyz_gradient_accum = torch.cat((self.xyz_gradient_accum, _xyz_gradient_accum), dim = 0)
+            for _key in self.field_keys:
+                _orgvalues = getattr(self, _key)
+                _newvalues = _paramters[_key]
+                _values = torch.cat((_orgvalues, _newvalues), dim = 0)
+                setattr(self, _key, _values)
 
-        self.confidence[...] = 0
-        self.max_2dradii[...] = 0
-        self.xyz_gradient_accum[...] = 0
+        for _key in self.field_keys:
+            getattr(self, _key)[...] = 0
 
     def updateCount(self, _rout : dict):
         _mask = _rout['mask']
         self.max_2dradii[_mask] = torch.max(self.max_2dradii[_mask], _rout['2dradii'][_mask])
         self.xyz_gradient_accum[_mask, :] += torch.norm(_rout['uv'].grad[_mask, :2], dim=-1, keepdim=True)
-        self.confidence[_mask, :] += 1
+        self.confidences[_mask, :] += 1
 
     def clear(self):
-        setattr(self, "confidence", None)
-        setattr(self, "max_2dradii", None)
-        setattr(self, "xyz_gradient_accum", None)
+        for _key in self.field_keys:
+            setattr(self, _key, None)
 
 class Module(gsmodel.IModule):
 
@@ -171,11 +169,19 @@ class Module(gsmodel.IModule):
         _features[:, :3, 0 ] = _colors
 
         _dist2 = torch.clamp_min(sknn.distCUDA2(_points.points), 0.0000001)
+        if hasattr(_points, "init_scaling"):
+            _dist2 *= _points.init_scaling
         _scaling = torch.sqrt(_dist2)[...,None].repeat(1, 3)
+
         _rots = torch.zeros((_colors.shape[0], 4), dtype = _colors.dtype, device = _colors.device)
         _rots[:, 0] = 1
 
-        _opacities = torch.ones((_colors.shape[0], 1), dtype = _colors.dtype, device = _colors.device) * 0.1
+        if hasattr(_points, "init_opacities"):
+            _init_opacities = _points.init_opacities
+        else:
+            _init_opacities = 0.1
+
+        _opacities = torch.ones((_colors.shape[0], 1), dtype = _colors.dtype, device = _colors.device) * _init_opacities
 
         return {
                 'xyz': _points.points,

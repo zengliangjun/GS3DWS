@@ -12,9 +12,15 @@ class Policy(gspolicy.IPolicy):
         for _item in _config.scene.scene_color:
             self.white_background = self.white_background and _item == 255
 
+    def setup(self, _config):
+        pass
+
+    def preUpdate(self, _config):
+        pass
+
     def _clone_split(self, _model: gsmodel.IModule, _optimer: gsoptimer.IOptimer):
         _state = _model.state
-        _grads = _state.xyz_gradient_accum / _state.confidence        
+        _grads = _state.xyz_gradient_accum / _state.confidences
         _grads[_grads.isnan()] = 0.0
 
         _select_mask = torch.where(torch.norm(_grads, dim=-1) >= self.policyConfg.densify_grad_threshold, True, False)
